@@ -35,7 +35,7 @@ ls(char *path)
     return;
   }
 
-  if(fstat(fd, &st) < 0){
+  if(fstat(fd, &st) < 0){ // fstat uses a file's descriptor for info
     fprintf(2, "ls: cannot stat %s\n", path);
     close(fd);
     return;
@@ -52,14 +52,15 @@ ls(char *path)
       break;
     }
     strcpy(buf, path);
-    p = buf+strlen(buf);
-    *p++ = '/';
-    while(read(fd, &de, sizeof(de)) == sizeof(de)){
+    p = buf+strlen(buf); // set p to the end of the buf array
+    *p++ = '/'; // append a slash to the buf
+    while(read(fd, &de, sizeof(de)) == sizeof(de)){ 
+      // read dir entries to de
       if(de.inum == 0)
         continue;
-      memmove(p, de.name, DIRSIZ);
-      p[DIRSIZ] = 0;
-      if(stat(buf, &st) < 0){
+      memmove(p, de.name, DIRSIZ); // construct a sub-dir path
+      p[DIRSIZ] = 0; // mark the end of the string
+      if(stat(buf, &st) < 0){ // stat uses a file's path for info
         printf("ls: cannot stat %s\n", buf);
         continue;
       }
@@ -75,7 +76,7 @@ main(int argc, char *argv[])
 {
   int i;
 
-  if(argc < 2){
+  if(argc < 2){ // no argument. a single ls
     ls(".");
     exit(0);
   }
